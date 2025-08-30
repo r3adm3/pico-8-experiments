@@ -13,6 +13,8 @@ function _init()
 end
 
 function _draw()
+ cls(0)
+	print ('score: 0')
  draw_starfield()
  draw_ship()
  draw_torpedo()
@@ -50,7 +52,7 @@ function init_starfield()
 end
 
 function draw_starfield()
- cls(0)
+-- cls(0)
  starfield()
 end
 
@@ -114,6 +116,9 @@ function ship_action()
  if btn(➡️) then
   ship_right()
  end
+ if (btn(🅾️) and torpedo.fired==0) then
+  fire_torpedo(ship.x,ship.y)
+ end
 end
 
 function ship_back()
@@ -135,33 +140,31 @@ function ship_right()
 end
 -->8
 function init_torpedo()
- torpx={}
- torpy={}
- torpspr={} 
- 
- torpx[1]=64
- torpy[1]=120
- torpspr[1]=1
- debug=torpy[1]
+ torpedo = {
+	 sprite = 5,
+	 x = 64,
+	 y = 40,
+	 fired = 0
+ }
 end
 
 function draw_torpedo()
- print(debug)
- spr(5,torpx[1],torpy[1])
+ if (torpedo.fired == 1) then
+  spr(torpedo.sprite, torpedo.x, torpedo.y)
+ end 
 end
 
 function update_torpedo()
- if (torpspr[1] < 3) then 
-  torpspr[1]=torpspr[1]+1
- else
-  torpspr[1]=1
- end
- 
- if (torpy[1] < 121 and torpy[1] > 10 ) then
- 	torpy[1] = torpy[1] - 3
- else 
-  torpy[1] = 120
- end
+  torpedo.y = torpedo.y - 2
+  if (torpedo.y == 0) then
+   torpedo.fired=0
+  end
+end
+
+function fire_torpedo()
+ torpedo.fired = 1
+ torpedo.x = ship.x
+ torpedo.y = ship.y - 10
 end
 
 __gfx__
