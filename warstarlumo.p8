@@ -5,25 +5,30 @@ __lua__
 --tab 1, starfield code
 --tab 2, ship code
 --tab 3, missiles
+--tab 4, enemy
 
 function _init()
 	init_starfield()
 	init_ship()
 	init_torpedo()
+ init_enemy()
 end
 
 function _draw()
  cls(0)
 	print ('score: 0')
+ print ('x:'..ship.x..' y:'..ship.y)
  draw_starfield()
  draw_ship()
  draw_torpedo()
+ draw_enemy()
 end
 
 function _update()
  update_starfield()
  update_ship()
  update_torpedo()
+ update_enemy()
 end
 
 
@@ -122,21 +127,29 @@ function ship_action()
 end
 
 function ship_back()
- ship.y += 1
+  if (ship.y > 69 and ship.y < 120) then 
+   ship.y += 1
+  end
 end
 
 function ship_fwd()
- ship.y -= 1
+ if (ship.y < 128 and ship.y > 70) then
+  ship.y -= 1
+ end
 end
 
 function ship_left()
  ship.sprite = 4
- ship.x -= 1
+ if (ship.x > 0) then
+  ship.x -= 1
+ end
 end
 
 function ship_right()
  ship.sprite = 3
- ship.x += 1
+ if (ship.x < 119) then 
+  ship.x += 1
+ end
 end
 -->8
 function init_torpedo()
@@ -156,17 +169,29 @@ end
 
 function update_torpedo()
   torpedo.y = torpedo.y - 2
-  if (torpedo.y == 0) then
+  if (torpedo.y <= 0) then
    torpedo.fired=0
   end
 end
 
 function fire_torpedo()
- torpedo.fired = 1
- torpedo.x = ship.x
- torpedo.y = ship.y - 10
+  torpedo.fired=1
+  torpedo.x = ship.x
+  torpedo.y = ship.y - 7
 end
 
+-->8
+function init_enemy()
+
+end
+
+function update_enemy()
+
+end
+
+function draw_enemy()
+
+end
 __gfx__
 00000000000660000006600000066000000660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000660000006600000066000000660000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000
