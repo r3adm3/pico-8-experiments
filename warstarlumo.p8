@@ -8,6 +8,7 @@ __lua__
 --tab 4, enemy
 
 function _init()
+	score=0
 	init_starfield()
 	init_ship()
 	init_torpedo()
@@ -16,19 +17,20 @@ end
 
 function _draw()
  cls(0)
-	print ('score: 0')
- print ('x:'..ship.x..' y:'..ship.y)
+	print ('score: '..score)
+ print ('x:'..enemyx[1]..' y:'..enemyy[1])
+
  draw_starfield()
  draw_ship()
- draw_torpedo()
  draw_enemy()
+ draw_torpedo()
 end
 
 function _update()
  update_starfield()
  update_ship()
- update_torpedo()
  update_enemy()
+ update_torpedo()
 end
 
 
@@ -157,6 +159,8 @@ function init_torpedo()
 	 sprite = 5,
 	 x = 64,
 	 y = 40,
+	 w=8,
+	 h=8,
 	 fired = 0
  }
 end
@@ -172,6 +176,11 @@ function update_torpedo()
   if (torpedo.y <= 0) then
    torpedo.fired=0
   end
+
+  if (boolcollision(torpedo,enemy) == true) then
+ 		score = score + 1
+  end 
+
 end
 
 function fire_torpedo()
@@ -180,12 +189,20 @@ function fire_torpedo()
   torpedo.y = ship.y - 7
 end
 
+
 -->8
 function init_enemy()
 	enemyx={}
 	enemyy={}
 	enemyspr={}
 	noofenemys=1
+	enemy={
+	 sprite=6,
+	 x=64,
+	 y=32,
+	 w=8,
+	 h=8
+	}
 end
 
 function update_enemy()
@@ -197,9 +214,17 @@ function update_enemy()
 end
 
 function draw_enemy()
-	for j=1,noofenemys do
-		spr(enemyspr[j],enemyx[j],enemyy[j])
-	end
+--	for j=1,noofenemys do
+		spr(enemy.sprite,enemy.x,enemy.y)
+--	end
+end
+-->8
+function boolcollision(a,b)
+  return a.x < b.x + b.w and
+         a.x + a.w > b.x and
+         a.y < b.y + b.h and
+         a.y + a.h > b.y
+	
 end
 __gfx__
 00000000000660000006600000066000000660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -340,3 +365,6 @@ __label__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
+__gff__
+0000000000010200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
