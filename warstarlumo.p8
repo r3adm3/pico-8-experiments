@@ -6,6 +6,8 @@ __lua__
 --tab 2, ship code
 --tab 3, missiles
 --tab 4, enemy
+--tab 5, collisions
+--tab 6, explosions
 
 function _init()
 	score=0
@@ -13,6 +15,7 @@ function _init()
 	init_ship()
 	init_torpedo()
  init_enemy()
+ init_explosions()
 end
 
 function _draw()
@@ -31,6 +34,7 @@ function _update()
  update_ship()
  update_enemy()
  update_torpedo()
+ update_explosions()
 end
 
 
@@ -179,6 +183,7 @@ function update_torpedo()
 
   if (boolcollision(torpedo,enemy) == true) then
  		score = score + 1
+    draw_explosions()
   end 
 
 end
@@ -225,6 +230,43 @@ function boolcollision(a,b)
          a.y < b.y + b.h and
          a.y + a.h > b.y
 	
+end
+-->8
+function init_explosions()
+ exps={}
+ clrs={5,9,10,7}
+end
+
+function draw_explosions()
+ for p in all(exps) do
+  circfill(p.x,p.y,p.scale,clrs[p.c])
+ end
+end
+
+function update_explosions()
+ for p in all(exps) do
+  p.x+=p.spdx
+  p.y+=p.spdy
+  p.scale-=.1
+  p.l-=.1
+  p.c=flr(p.l)
+  if p.l<=0 then del(exps,p) end
+ end
+
+ if btnp(❎) then
+  xp=64
+  yp=64
+  for i=0,20 do
+   add(exps,{
+    x=xp,
+    y=xp,
+    spdx=1-rnd(2),
+    spdy=1-rnd(2),
+    scale=2+rnd(5),
+    l=5
+   })
+  end
+ end
 end
 __gfx__
 00000000000660000006600000066000000660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
