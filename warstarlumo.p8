@@ -27,6 +27,7 @@ function _draw()
  draw_ship()
  draw_enemy()
  draw_torpedo()
+ draw_explosions()
 end
 
 function _update()
@@ -183,7 +184,9 @@ function update_torpedo()
 
   if (boolcollision(torpedo,enemy) == true) then
  		score = score + 1
-    draw_explosions()
+ 		torpedo.fired=0 --9/11
+   create_explosion(enemy.x+4, enemy.y+4)
+   --9/11 draw_explosions()
   end 
 
 end
@@ -253,20 +256,34 @@ function update_explosions()
   if p.l<=0 then del(exps,p) end
  end
 
- if btnp(❎) then
-  xp=64
-  yp=64
-  for i=0,20 do
-   add(exps,{
-    x=xp,
-    y=xp,
-    spdx=1-rnd(2),
-    spdy=1-rnd(2),
-    scale=2+rnd(5),
-    l=5
-   })
+-- if btnp(❎) then
+--  xp=64
+--  yp=64
+--  for i=0,20 do
+--   add(exps,{
+--    x=xp,
+--   y=xp,
+--    spdx=1-rnd(2),
+--    spdy=1-rnd(2),
+--    scale=2+rnd(5),
+--    l=5
+--   })
+--  end
+-- end
+end
+
+function create_explosion(xp, yp)
+  for i=0,5 do
+    add(exps,{
+      x=xp,
+      y=yp,
+      spdx=1-rnd(2),
+      spdy=1-rnd(2),
+      scale=2+rnd(5),
+      l=5,
+      c=4
+    })
   end
- end
 end
 __gfx__
 00000000000660000006600000066000000660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
