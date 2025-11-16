@@ -159,6 +159,7 @@ function ship_right()
  end
 end
 -->8
+-->8
 function init_torpedo()
  torpedo = {
 	 sprite = 5,
@@ -182,11 +183,11 @@ function update_torpedo()
    torpedo.fired=0
   end
 
-  if (boolcollision(torpedo,enemy) == true) then
+  if enemy.active and (boolcollision(torpedo,enemy) == true) then
  		score = score + 1
- 		torpedo.fired=0 --9/11
+ 		torpedo.fired=0
    create_explosion(enemy.x+4, enemy.y+4)
-   --9/11 draw_explosions()
+   enemy_hit() -- call the new enemy hit function
   end 
 
 end
@@ -196,8 +197,7 @@ function fire_torpedo()
   torpedo.x = ship.x
   torpedo.y = ship.y - 7
 end
-
-
+-->8
 -->8
 function init_enemy()
 	enemyx={}
@@ -209,22 +209,95 @@ function init_enemy()
 	 x=64,
 	 y=32,
 	 w=8,
-	 h=8
+	 h=8,
+	 dx=0.2-rnd(0.4), -- random x velocity
+	 dy=0.1-rnd(0.2), -- random y velocity
+	 minx=8,  -- movement boundaries
+	 maxx=112,
+	 miny=8,
+	 maxy=50,
+	 active=true, -- is enemy visible/active
+	 respawn_timer=0, -- countdown to respawn
+	 speed_mult=1 -- speed multiplier
 	}
 end
 
 function update_enemy()
+ -- handle respawn countdown
+ if not enemy.active then
+  enemy.respawn_timer -= 1
+  if enemy.respawn_timer <= 0 then
+   spawn_enemy()
+  end
+  return -- don't update position if inactive
+ end
+ 
+ -- update position
+ enemy.x += enemy.dx * enemy.speed_mult
+ enemy.y += enemy.dy * enemy.speed_mult
+ 
+ -- hard clamp position first
+ enemy.x = mid(enemy.minx, enemy.x, enemy.maxx)
+ enemy.y = mid(enemy.miny, enemy.y, enemy.maxy)
+ 
+ -- if flying in from top, wait until fully in bounds
+ if enemy.y <= enemy.miny then
+  enemy.y = enemy.miny -- force to boundary
+  enemy.dy = abs(enemy.dy) -- force downward
+  if enemy.dy < 0.1 then 
+   enemy.dy = 0.1 * enemy.speed_mult 
+  end
+ elseif enemy.y >= enemy.miny and enemy.dy > 0.2 then
+  -- just entered play area, slow down and randomize
+  enemy.dy = (0.1-rnd(0.2)) * enemy.speed_mult
+  enemy.dx = (0.2-rnd(0.4)) * enemy.speed_mult
+ end
+ 
+ -- bounce off boundaries and change direction randomly
+ if enemy.x <= enemy.minx or enemy.x >= enemy.maxx then
+  enemy.dx = -enemy.dx
+  enemy.dy = (0.1-rnd(0.2)) * enemy.speed_mult
+ end
+ 
+ if enemy.y >= enemy.maxy then
+  enemy.dy = -abs(enemy.dy) -- force upward when at bottom
+  enemy.dx = (0.2-rnd(0.4)) * enemy.speed_mult
+ end
+ 
+ -- occasionally change direction randomly
+ if rnd() < 0.02 then
+  enemy.dx = (0.2-rnd(0.4)) * enemy.speed_mult
+  enemy.dy = (0.1-rnd(0.2)) * enemy.speed_mult
+ end
+ 
+ -- old array code (kept for compatibility)
  for j=1,noofenemys do
-  enemyx[j]=64
-  enemyy[j]=32
+  enemyx[j]=enemy.x
+  enemyy[j]=enemy.y
   enemyspr[j]=6
  end
 end
 
 function draw_enemy()
---	for j=1,noofenemys do
-		spr(enemy.sprite,enemy.x,enemy.y)
---	end
+ if enemy.active then
+  spr(enemy.sprite,enemy.x,enemy.y)
+ end
+end
+
+function enemy_hit()
+ enemy.active = false
+ enemy.respawn_timer = 150 -- 5 seconds at 30fps
+ enemy.speed_mult += 0.3 -- increase speed for next spawn
+end
+
+function spawn_enemy()
+ enemy.active = true
+ enemy.x = 20 + rnd(88) -- random x position at top
+ enemy.y = -8 -- start above screen
+ enemy.dx = (0.2-rnd(0.4)) * enemy.speed_mult
+ enemy.dy = 0.5 * enemy.speed_mult -- fly downward faster
+ enemy.miny = 8 -- reset boundaries
+ enemy.maxy = 50
 end
 -->8
 function boolcollision(a,b)
