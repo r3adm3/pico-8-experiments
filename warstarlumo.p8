@@ -21,7 +21,7 @@ end
 function _draw()
  cls(0)
 	print ('score: '..score)
- print ('x:'..enemyx[1]..' y:'..enemyy[1])
+-- print ('x:'..enemyx[1]..' y:'..enemyy[1])
 
  draw_starfield()
  draw_ship()
@@ -159,12 +159,11 @@ function ship_right()
  end
 end
 -->8
--->8
 function init_torpedo()
  torpedo = {
 	 sprite = 5,
 	 x = 64,
-	 y = 40,
+	 y = 100,
 	 w=8,
 	 h=8,
 	 fired = 0
@@ -178,6 +177,10 @@ function draw_torpedo()
 end
 
 function update_torpedo()
+  if (torpedo.fired == 0) then
+   return -- don't update if not fired
+  end
+  
   torpedo.y = torpedo.y - 2
   if (torpedo.y <= 0) then
    torpedo.fired=0
